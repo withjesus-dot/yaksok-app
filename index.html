@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F6F7F9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="약속">
+<meta name="format-detection" content="telephone=no">
+<title>약속 · 오늘 약과 건강 기록</title>
+<style>
+/* ============ 디자인 토큰 ============ */
+:root{
+  --bg:#F6F7F9;
+  --surface:#FFFFFF;
+  --surface-2:#FAFBFC;
+  --ink:#111827;
+  --ink-2:#374151;
+  --muted:#6B7280;
+  --line:#ECEEF2;
+  --teal:#0F766E;
+  --teal-deep:#0B5F59;
+  --mint:#10B981;
+  --mint-bg:#ECFDF5;
+  --mint-line:#C9EDE3;
+  --amber:#B45309;
+  --amber-bg:#FFF7ED;
+  --amber-line:#FBE4C9;
+  --coral:#B42318;
+  --coral-bg:#FDECEA;
+  --coral-line:#F7D0CA;
+  --indigo-bg:#EEF2FF;
+  --indigo-ink:#4338CA;
+  --slate-bg:#F1F5F9;
+  --r-lg:20px;
+  --r-md:16px;
+  --r-sm:13px;
+  --shadow-card:0 1px 2px rgba(16,24,40,.04), 0 10px 24px -14px rgba(16,24,40,.20);
+  --shadow-tap:0 1px 2px rgba(16,24,40,.06);
+  --font:"Pretendard","Pretendard Variable",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",system-ui,"Segoe UI",Roboto,sans-serif;
+}
+
+/* ============ 기본 ============ */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);color:var(--ink);font-family:var(--font);
+  font-size:18px;line-height:1.55;letter-spacing:-0.01em;
+  word-break:keep-all;overflow-wrap:break-word;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+button,input,select{font-family:inherit}
+button{border:0;background:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;color:inherit}
+:focus-visible{outline:3px solid rgba(15,118,110,.45);outline-offset:2px}
+[hidden]{display:none !important}
+
+/* ============ 앱 껍데기 ============ */
+.app{
+  position:relative;width:100%;max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;
+  background:var(--bg);
+  box-shadow:0 0 0 1px rgba(16,24,40,.04), 0 20px 60px -30px rgba(16,24,40,.25);
+}
+@media (min-width:520px){ .app{margin:0 auto} }
+
+/* ============ 상단 바 ============ */
+.topbar{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;gap:10px;
+  padding:calc(env(safe-area-inset-top) + 12px) 18px 12px;
+  background:rgba(246,247,249,.86);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
+  backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid rgba(236,238,242,.9);
+}
+.brand{display:flex;align-items:center;gap:9px}
+.brand-mark{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:11px;
+  background:linear-gradient(145deg,#10B981 0%,#0F766E 70%);box-shadow:0 4px 10px -4px rgba(15,118,110,.55)}
+.brand-name{font-size:20px;font-weight:800;letter-spacing:-0.03em}
+.save{
+  margin-left:auto;font-size:13px;font-weight:700;color:#98A2B3;
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 12px;
+  transition:color .2s ease,background .2s ease,border-color .2s ease;
+}
+.save.on{color:var(--teal);background:var(--mint-bg);border-color:var(--mint-line)}
+
+/* ============ 본문 ============ */
+.main{padding:16px 16px calc(104px + env(safe-area-inset-bottom))}
+.panel{animation:fade .22s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ============ 카드 ============ */
+.card{
+  background:var(--surface);border-radius:var(--r-lg);padding:18px;
+  box-shadow:var(--shadow-card);border:1px solid rgba(236,238,242,.9);
+  margin:0 0 14px;
+}
+.card:last-child{margin-bottom:0}
+.card-title{margin:0 0 4px;font-size:20px;font-weight:800;letter-spacing:-0.03em;display:flex;align-items:center;gap:8px}
+.card-title .num{font-size:15px;font-weight:800;color:var(--teal);background:var(--mint-bg);border-radius:999px;padding:3px 10px}
+.card-desc{margin:0 0 14px;font-size:15.5px;color:var(--muted);line-height:1.55}
+.section-label{
+  margin:22px 4px 10px;font-size:14px;font-weight:800;color:#8A93A2;letter-spacing:.01em;
+}
+
+/* ============ 히어로 ============ */
+.hero{
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(120% 90% at 100% 0%, #E8F6F1 0%, rgba(232,246,241,0) 58%),
+    var(--surface);
+  border-radius:24px;padding:20px 18px 18px;margin:0 0 16px;
+  box-shadow:var(--shadow-card);border:1px solid rgba(201,237,227,.75);
+}
+.hero-greet{margin:0;font-size:22px;font-weight:800;letter-spacing:-0.035em}
+.hero-sub{margin:2px 0 16px;font-size:15px;color:var(--muted);font-weight:600}
+.hero-body{display:flex;align-items:center;gap:16px}
+.ring-wrap{position:relative;width:104px;height:104px;flex:0 0 auto}
+.ring-svg{display:block;width:104px;height:104px}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+.ring-pct{font-size:27px;font-weight:800;letter-spacing:-0.04em;line-height:1;color:var(--teal);font-variant-numeric:tabular-nums}
+.ring-pct small{font-size:14px;font-weight:800;margin-left:1px}
+.ring-cap{font-size:12px;font-weight:700;color:var(--muted);margin-top:3px}
+.hero-info{flex:1;min-width:0}
+.hero-count{margin:0;font-size:18.5px;font-weight:700;color:var(--ink-2);letter-spacing:-0.025em;line-height:1.45}
+.hero-count b{font-size:24px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.hero-note{margin:6px 0 0;font-size:14.5px;font-weight:700;color:var(--muted);letter-spacing:-0.02em}
+.hero-next{display:inline-flex;align-items:center;gap:7px;max-width:100%;font-size:14.5px;font-weight:800;color:var(--teal);
+  background:rgba(236,253,245,.9);border:1px solid var(--mint-line);border-radius:999px;padding:7px 12px;letter-spacing:-0.02em}
+.hero-next span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hero-foot{display:flex;margin-top:12px}
+
+/* ============ 진행 바 ============ */
+.bar{height:9px;border-radius:999px;background:#EDF0F3;overflow:hidden;margin:10px 0 0}
+.bar > span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#34D399,#0F766E);transition:width .35s ease}
+.bar.sm{height:7px;margin:10px 0 0}
+
+/* ============ 시간대 카드 ============ */
+.slot-card{padding:16px 16px 14px}
+.slot-head{display:flex;align-items:center;gap:12px}
+.tile{
+  width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex:0 0 auto;border:1px solid transparent;
+}
+.tile.mint{background:var(--mint-bg);border-color:var(--mint-line)}
+.tile.amber{background:var(--amber-bg);border-color:var(--amber-line)}
+.tile.indigo{background:var(--indigo-bg);border-color:#DDE3FB}
+.tile.slate{background:var(--slate-bg);border-color:#E3E8EF}
+.slot-title{flex:1;min-width:0}
+.slot-name{display:block;font-size:20px;font-weight:800;letter-spacing:-0.03em;line-height:1.2}
+.slot-state{display:block;font-size:14px;font-weight:700;color:var(--muted);margin-top:2px}
+.slot-state.done{color:var(--teal)}
+.slot-alarm{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.slot-alarm label{font-size:13px;font-weight:800;color:#8A93A2;letter-spacing:.01em}
+.time-input{
+  min-height:52px;border:1px solid var(--line);background:#F7F8FA;border-radius:14px;
+  padding:0 10px;font-size:19px;font-weight:800;color:var(--teal-deep);font-variant-numeric:tabular-nums;
+  -webkit-appearance:none;appearance:none;
+}
+
+/* 복약 한 줄 */
+.dose{display:flex;align-items:center;gap:12px;padding:13px 0 0;border-top:1px solid var(--line);margin-top:13px}
+.dose:first-of-type{border-top:1px solid var(--line)}
+.dose-info{flex:1;min-width:0}
+.dose-name{margin:0;font-size:18px;font-weight:800;letter-spacing:-0.02em;line-height:1.35;word-break:keep-all;overflow-wrap:anywhere}
+.dose-usage{margin:3px 0 0;font-size:15.5px;font-weight:600;color:var(--muted)}
+.take-btn{
+  flex:0 0 auto;min-width:112px;min-height:54px;padding:0 14px;border-radius:15px;
+  border:1.5px solid #DFE3E9;background:var(--surface);color:var(--ink-2);
+  font-size:17px;font-weight:800;letter-spacing:-0.02em;
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  transition:transform .08s ease,background .18s ease,border-color .18s ease,color .18s ease;
+}
+.take-btn:active{transform:scale(.97)}
+.take-btn.on{background:var(--mint-bg);border-color:var(--teal);color:var(--teal-deep)}
+.empty-slot{padding:14px 0 2px;border-top:1px solid var(--line);margin-top:13px;text-align:center}
+.empty-slot p{margin:0 0 8px;font-size:15.5px;color:var(--muted);font-weight:600}
+.bell-btn{
+  width:100%;min-height:52px;margin-top:12px;border-radius:14px;background:var(--surface-2);
+  border:1px solid var(--line);color:var(--teal);font-size:16.5px;font-weight:800;letter-spacing:-0.02em;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:background .18s ease;
+}
+.bell-btn:active{background:var(--mint-bg)}
+
+/* ============ 버튼 ============ */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:54px;
+  padding:12px 16px;border-radius:15px;font-size:19px;font-weight:800;letter-spacing:-0.025em;
+  transition:transform .08s ease,filter .18s ease,background .18s ease;text-align:center;
+}
+.btn:active{transform:scale(.985)}
+.btn-primary{background:var(--teal);color:#fff;box-shadow:0 8px 16px -10px rgba(15,118,110,.9)}
+.btn-mint{background:var(--mint);color:#04352A;box-shadow:0 8px 16px -10px rgba(16,185,129,.9)}
+.btn-soft{background:#F2F4F7;color:var(--ink-2);border:1px solid var(--line)}
+.btn-ghost{background:transparent;color:var(--muted);font-size:16.5px;min-height:52px}
+.btn-line{background:var(--surface);color:var(--teal);border:1.5px solid var(--mint-line)}
+.btn-lg{font-size:20px;min-height:58px;border-radius:16px}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.row-2 .btn{font-size:18px;padding:10px 8px}
+.mini-link{
+  display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin-top:6px;
+  font-size:15.5px;font-weight:700;color:#8A93A2;background:none;
+}
+.mini-link:active{color:var(--teal)}
+
+/* ============ 칩 ============ */
+.chips{display:flex;flex-wrap:wrap;gap:9px}
+.chip{
+  min-height:52px;padding:0 18px;border-radius:999px;border:1.5px solid #E3E7ED;background:var(--surface);
+  color:var(--ink-2);font-size:17.5px;font-weight:700;letter-spacing:-0.02em;
+  display:inline-flex;align-items:center;gap:6px;transition:all .16s ease;
+}
+.chip:active{transform:scale(.97)}
+.chip.on{background:var(--mint-bg);border-color:var(--teal);color:var(--teal-deep);font-weight:800}
+.chip.sm{min-height:48px;padding:0 15px;font-size:16px}
+
+/* ============ 폼 ============ */
+.field{display:block;margin:0 0 16px}
+.field > .label{display:block;font-size:15.5px;font-weight:800;color:var(--ink-2);margin:0 0 8px}
+.field > .label em{font-style:normal;font-size:13.5px;font-weight:700;color:#98A2B3;margin-left:6px}
+.input{
+  width:100%;min-height:56px;border:1.5px solid #E3E7ED;background:var(--surface);border-radius:14px;
+  padding:12px 15px;font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-0.02em;
+  transition:border-color .16s ease,box-shadow .16s ease;
+}
+.input::placeholder{color:#AEB6C2;font-weight:600}
+.input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(15,118,110,.10)}
+.unit-note{margin:8px 0 0;font-size:14px;font-weight:700;color:#98A2B3}
+
+/* ============ 사진 등록 ============ */
+.dropzone{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;
+  min-height:120px;border:1.5px dashed #D5DAE3;border-radius:var(--r-lg);background:var(--surface-2);
+  color:var(--teal);padding:18px;text-align:center;
+}
+.dropzone .dz-ico{font-size:26px}
+.dropzone .dz-main{font-size:19px;font-weight:800;letter-spacing:-0.02em}
+.dropzone .dz-sub{font-size:14px;font-weight:600;color:#98A2B3}
+.preview{margin:12px 0 0;border-radius:var(--r-md);overflow:hidden;background:#0F172A0a;border:1px solid var(--line)}
+.preview img{display:block;width:100%;max-height:260px;object-fit:cover}
+.hint{margin:12px 0 0;font-size:14.5px;color:#98A2B3;font-weight:600;text-align:center}
+.notice{
+  margin:12px 0 0;font-size:13.5px;line-height:1.5;color:#8A93A2;background:#F7F8FA;
+  border-radius:12px;padding:10px 12px;border:1px solid var(--line);
+}
+.ocr-loading{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;font-size:16px;font-weight:800;color:var(--teal)}
+.spinner{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--mint-line);border-top-color:var(--teal);animation:spin .8s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ocr-panel{margin-top:14px;border:1px solid var(--mint-line);background:linear-gradient(180deg,#F7FDFA,#FFFFFF);border-radius:var(--r-md);padding:14px}
+.ocr-title{margin:0 0 10px;font-size:16px;font-weight:800;color:var(--teal-deep);display:flex;align-items:center;gap:6px}
+.ocr-list{list-style:none;margin:0 0 12px;padding:0}
+.ocr-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #EDF4F1}
+.ocr-item:first-child{border-top:0;padding-top:0}
+.ocr-item .oi-main{flex:1;min-width:0}
+.ocr-item .oi-name{margin:0;font-size:16.5px;font-weight:800;letter-spacing:-0.02em}
+.ocr-item .oi-sub{margin:1px 0 0;font-size:13.5px;font-weight:600;color:var(--muted)}
+.tag{font-size:12.5px;font-weight:800;border-radius:999px;padding:4px 9px;white-space:nowrap}
+.tag.new{background:var(--mint-bg);color:var(--teal-deep);border:1px solid var(--mint-line)}
+.tag.dup{background:#F2F4F7;color:#8A93A2;border:1px solid var(--line)}
+
+/* ============ 등록된 약 목록 ============ */
+.med-list{list-style:none;margin:6px 0 0;padding:0}
+.med-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.med-row:first-child{border-top:0}
+.med-main{flex:1;min-width:0}
+.med-name{margin:0;font-size:17px;font-weight:800;letter-spacing:-0.02em;word-break:keep-all;overflow-wrap:anywhere}
+.med-meta{margin:2px 0 0;font-size:15px;font-weight:600;color:var(--muted)}
+.icon-btn{
+  flex:0 0 auto;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:#F5F6F8;color:#98A2B3;font-size:17px;font-weight:800;border:1px solid var(--line);
+}
+.icon-btn:active{background:var(--coral-bg);color:var(--coral)}
+
+/* ============ 건강수치 ============ */
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#EFF1F5;border-radius:15px;padding:5px;margin:0 0 16px}
+.seg button{
+  min-height:52px;border-radius:12px;font-size:18px;font-weight:800;color:#6B7280;letter-spacing:-0.02em;
+  transition:background .18s ease,color .18s ease,box-shadow .18s ease;
+}
+.seg button.on{background:var(--surface);color:var(--teal-deep);box-shadow:0 2px 6px rgba(16,24,40,.10)}
+.bp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rec-list{list-style:none;margin:6px 0 0;padding:0}
+.rec{display:flex;align-items:center;gap:10px;padding:13px 0;border-top:1px solid var(--line)}
+.rec:first-child{border-top:0;padding-top:4px}
+.rec-main{flex:1;min-width:0}
+.rec-val{margin:0;font-size:19px;font-weight:800;letter-spacing:-0.03em;font-variant-numeric:tabular-nums}
+.rec-val small{font-size:13.5px;font-weight:700;color:var(--muted);margin-left:3px}
+.rec-when{margin:2px 0 0;font-size:14.5px;font-weight:600;color:#98A2B3}
+.badge{font-size:13.5px;font-weight:800;border-radius:999px;padding:6px 11px;white-space:nowrap;border:1px solid transparent}
+.badge.ok{background:var(--mint-bg);color:var(--teal-deep);border-color:var(--mint-line)}
+.badge.warn{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-line)}
+.badge.bad{background:var(--coral-bg);color:var(--coral);border-color:var(--coral-line)}
+.rec-del{width:44px;height:44px;border-radius:50%;color:#B9C0CC;font-size:16px;display:flex;align-items:center;justify-content:center}
+.rec-del:active{background:var(--coral-bg);color:var(--coral)}
+.empty{text-align:center;padding:20px 6px;color:#98A2B3;font-size:15.5px;font-weight:600}
+
+/* ============ 운동 ============ */
+.steps-big{display:flex;align-items:baseline;gap:6px;margin:2px 0 0}
+.steps-big b{font-size:38px;font-weight:800;letter-spacing:-0.05em;line-height:1.05;font-variant-numeric:tabular-nums}
+.steps-big small{font-size:17px;font-weight:800;color:var(--muted)}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;font-size:15px;font-weight:700;color:var(--muted)}
+.row-between b{color:var(--teal-deep);font-size:16px}
+.goal-label{margin:14px 0 0;font-size:14px;font-weight:800;color:#98A2B3}
+.goal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.goal-grid .chip{width:100%;min-height:52px;padding:0 4px;justify-content:center;font-size:16px;font-variant-numeric:tabular-nums;letter-spacing:-0.03em}
+.ex-item{padding:16px 0;border-top:1px solid var(--line)}
+.ex-item:first-of-type{border-top:0;padding-top:4px}
+.ex-head{display:flex;align-items:center;gap:12px}
+.ex-info{flex:1;min-width:0}
+.ex-name{margin:0;font-size:18.5px;font-weight:800;letter-spacing:-0.03em}
+.ex-sub{margin:2px 0 0;font-size:15px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.ex-pct{font-size:16px;font-weight:800;color:#98A2B3;font-variant-numeric:tabular-nums}
+
+/* ============ 탭 바 ============ */
+.tabbar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:40;
+  width:100%;max-width:480px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:2px;
+  padding:8px 8px calc(8px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.92);
+  -webkit-backdrop-filter:saturate(180%) blur(16px);
+  backdrop-filter:saturate(180%) blur(16px);
+  border-top:1px solid rgba(236,238,242,.95);
+  box-shadow:0 -8px 24px -18px rgba(16,24,40,.35);
+}
+.tabbar button{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  min-height:58px;border-radius:16px;color:#8A93A2;transition:color .16s ease,background .16s ease;
+}
+.tabbar .ti{font-size:21px;line-height:1;filter:grayscale(.45);opacity:.85;transition:all .16s ease}
+.tabbar .tl{font-size:14px;font-weight:800;letter-spacing:-0.02em}
+.tabbar button.on{color:var(--teal-deep);background:rgba(236,253,245,.75)}
+.tabbar button.on .ti{filter:none;opacity:1;transform:translateY(-1px) scale(1.06)}
+
+/* ============ 오버레이 ============ */
+.overlay{
+  position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:rgba(17,24,39,.42);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  animation:fade .18s ease both;
+}
+.sheet{
+  width:100%;max-width:420px;background:var(--surface);border-radius:26px;
+  padding:24px 20px calc(20px + env(safe-area-inset-bottom));
+  box-shadow:0 30px 70px -30px rgba(9,30,66,.55);animation:pop .26s cubic-bezier(.2,.9,.3,1.2) both;
+  max-height:calc(100vh - 40px);overflow:auto;
+}
+@keyframes pop{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
+.alarm-bell{font-size:52px;text-align:center;line-height:1;animation:ring 1.6s ease-in-out infinite}
+@keyframes ring{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+.alarm-kicker{margin:14px 0 2px;text-align:center;font-size:15px;font-weight:800;color:var(--teal);letter-spacing:.02em}
+.alarm-title{margin:0 0 16px;text-align:center;font-size:26px;font-weight:800;letter-spacing:-0.04em}
+.alarm-meds{list-style:none;margin:0 0 18px;padding:0;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-md);padding:4px 14px}
+.alarm-meds li{padding:12px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center}
+.alarm-meds li:first-child{border-top:0}
+.alarm-meds .am-name{font-size:17.5px;font-weight:800;letter-spacing:-0.02em}
+.alarm-meds .am-use{font-size:14px;font-weight:600;color:var(--muted)}
+.btn-xl{min-height:62px;font-size:21px;border-radius:18px}
+.sheet-actions{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.sheet-title{margin:0 0 6px;font-size:22px;font-weight:800;letter-spacing:-0.03em;text-align:center}
+.sheet-desc{margin:0 0 4px;font-size:16px;color:var(--muted);text-align:center;line-height:1.55}
+
+/* ============ 토스트 ============ */
+.toast{
+  position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 64px);transform:translate(-50%,-10px);
+  z-index:200;max-width:min(420px,90vw);
+  background:rgba(17,24,39,.94);color:#fff;font-size:16px;font-weight:700;letter-spacing:-0.01em;
+  padding:13px 20px;border-radius:16px;box-shadow:0 16px 34px -20px rgba(0,0,0,.7);
+  opacity:0;pointer-events:none;transition:opacity .22s ease,transform .22s ease;text-align:center;
+}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.btn-ocr{font-size:18.5px}
+
+/* ============ 기타 ============ */
+.app-foot{margin:20px 4px 0;text-align:center;font-size:13px;color:#A6AEBB;font-weight:600;line-height:1.6}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="brand-name">약속</span>
+    </div>
+    <span class="save" id="saveDot">자동 저장</span>
+  </header>
+
+  <main class="main">
+    <section class="panel" id="panel-today" role="tabpanel" aria-label="오늘 약"></section>
+    <section class="panel" id="panel-add" role="tabpanel" aria-label="약 등록" hidden></section>
+    <section class="panel" id="panel-health" role="tabpanel" aria-label="건강수치" hidden></section>
+    <section class="panel" id="panel-exercise" role="tabpanel" aria-label="운동" hidden></section>
+  </main>
+
+  <nav class="tabbar" role="tablist" aria-label="주요 메뉴">
+    <button role="tab" aria-selected="true" class="on" data-act="tab" data-tab="today">
+      <span class="ti" aria-hidden="true">💊</span><span class="tl">오늘 약</span>
+    </button>
+    <button role="tab" aria-selected="false" data-act="tab" data-tab="add">
+      <span class="ti" aria-hidden="true">📷</span><span class="tl">약 등록</span>
+    </button>
+    <button role="tab" aria-selected="false" data-act="tab" data-tab="health">
+      <span class="ti" aria-hidden="true">❤️</span><span class="tl">건강수치</span>
+    </button>
+    <button role="tab" aria-selected="false" data-act="tab" data-tab="exercise">
+      <span class="ti" aria-hidden="true">🏃</span><span class="tl">운동</span>
+    </button>
+  </nav>
+</div>
+
+<input type="file" id="photoInput" accept="image/*" capture="environment" hidden>
+
+<div class="overlay" id="alarmOverlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="alarmTitle">
+    <div class="alarm-bell" aria-hidden="true">🔔</div>
+    <p class="alarm-kicker">복약 시간이에요</p>
+    <h2 class="alarm-title" id="alarmTitle">아침 약</h2>
+    <ul class="alarm-meds" id="alarmMeds"></ul>
+    <div class="sheet-actions">
+      <button class="btn btn-primary btn-xl" data-act="alarm-take">먹었어요</button>
+      <button class="btn btn-ghost" data-act="alarm-later">10분 뒤에 다시 알려 주세요</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="resetOverlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="resetTitle">
+    <h2 class="sheet-title" id="resetTitle">예시 초기화</h2>
+    <p class="sheet-desc">약 목록·복약 체크·수치 기록·운동 기록이 모두 지워지고, 처음 예시 데이터로 돌아갑니다. 계속할까요?</p>
+    <div class="sheet-actions">
+      <button class="btn btn-primary" data-act="reset-yes">예시로 되돌리기</button>
+      <button class="btn btn-soft" data-act="cancel">그대로 두기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ================= 상수 ================= */
+  var KEY = 'yaksok_senior_health_v1';
+
+  var SLOTS = [
+    { key:'morning', name:'아침',    emoji:'🌅', tint:'mint',   def:'08:00' },
+    { key:'lunch',   name:'점심',    emoji:'☀️', tint:'amber',  def:'12:30' },
+    { key:'evening', name:'저녁',    emoji:'🌇', tint:'indigo', def:'18:30' },
+    { key:'night',   name:'자기 전', emoji:'🌙', tint:'slate',  def:'22:00' }
+  ];
+
+  var USAGES = ['식전 30분','식후 30분','식후 즉시','취침 전'];
+  var CONDITIONS = ['고혈압','당뇨','고지혈증','심장질환','관절염','신장질환'];
+  var STEP_GOALS = [4000, 6000, 8000, 10000];
+
+  var EXERCISES = [
+    { key:'squat', emoji:'🏋️', name:'스쿼트',    goal:30,  unit:'회', step:10 },
+    { key:'rope',  emoji:'🤸', name:'줄넘기',    goal:100, unit:'회', step:10 },
+    { key:'walk',  emoji:'🚶', name:'걷기 운동', goal:30,  unit:'분', step:10 }
+  ];
+
+  /* 약봉투·처방전 촬영 체험에서 읽어낸 것으로 보여 줄 예시 */
+  var OCR_RESULT = [
+    { name:'아모잘탄정 5/50mg',   usage:'식후 30분', memo:'혈압',    slots:['morning'] },
+    { name:'메트포르민정 500mg',  usage:'식후 즉시', memo:'당뇨',    slots:['morning','evening'] },
+    { name:'로수바스타틴정 10mg', usage:'취침 전',   memo:'고지혈증', slots:['night'] }
+  ];
+
+  /* ================= 유틸 ================= */
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function dk(d){ d = d || new Date(); return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+  function uid(p){ return (p || 'x') + Date.now().toString(36) + Math.floor(Math.random()*1679616).toString(36); }
+  function fmtNum(n){
+    var v = String(Math.round(Number(n) || 0));
+    return v.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  function esc(s){
+    return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+  function normName(s){ return String(s || '').replace(/\s+/g,'').toLowerCase(); }
+  function toMin(t){
+    var p = String(t || '00:00').split(':');
+    return (parseInt(p[0],10) || 0) * 60 + (parseInt(p[1],10) || 0);
+  }
+  function atTime(daysAgo, h, m){
+    var d = new Date();
+    d.setDate(d.getDate() - daysAgo);
+    d.setHours(h, m, 0, 0);
+    return d.toISOString();
+  }
+  function fmtWhen(iso){
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    var wd = ['일','월','화','수','목','금','토'];
+    var todayKey = dk();
+    var yKey = dk(new Date(Date.now() - 86400000));
+    var k = dk(d);
+    var datePart = (k === todayKey) ? '오늘' : (k === yKey) ? '어제' : (d.getMonth()+1)+'월 '+d.getDate()+'일('+wd[d.getDay()]+')';
+    var h = d.getHours();
+    var ap = h < 12 ? '오전' : '오후';
+    var hh = h % 12 === 0 ? 12 : h % 12;
+    return datePart + ' ' + ap + ' ' + hh + ':' + pad(d.getMinutes());
+  }
+  function slotName(key){
+    for (var i=0;i<SLOTS.length;i++){ if (SLOTS[i].key === key) return SLOTS[i].name; }
+    return key;
+  }
+  function slotOf(key){
+    for (var i=0;i<SLOTS.length;i++){ if (SLOTS[i].key === key) return SLOTS[i]; }
+    return SLOTS[0];
+  }
+  function sortedSlots(keys){
+    var out = [];
+    SLOTS.forEach(function(s){ if (keys.indexOf(s.key) >= 0) out.push(s.key); });
+    return out;
+  }
+  function slotLabel(keys){
+    if (!keys || !keys.length) return '시간 미정';
+    return sortedSlots(keys).map(function(k){
+      return k === 'night' ? '자기 전' : slotName(k);
+    }).join(' · ');
+  }
+
+  /* ================= 초기 데이터 ================= */
+  function seedState(){
+    var t = dk();
+    var s = {
+      version: 1,
+      meds: [
+        { id:'m1', name:'노바스크정 5mg',           usage:'식후 30분', memo:'혈압',      slots:['morning'] },
+        { id:'m2', name:'자누비아정 100mg',         usage:'식후 즉시', memo:'당뇨',      slots:['morning'] },
+        { id:'m3', name:'아토르바스타틴정 10mg',    usage:'취침 전',   memo:'고지혈증',  slots:['night'] },
+        { id:'m4', name:'아스피린프로텍트정 100mg', usage:'식후 30분', memo:'혈전 예방', slots:['morning'] }
+      ],
+      alarms: { morning:'08:00', lunch:'12:30', evening:'18:30', night:'22:00' },
+      taken: {},
+      conditions: ['고혈압','당뇨'],
+      vitals: [
+        { id:'v1', kind:'bp',      sys:128, dia:82, at: atTime(1, 8, 10) },
+        { id:'v2', kind:'glucose', value:108, sub:'공복', at: atTime(1, 7, 40) },
+        { id:'v3', kind:'bp',      sys:146, dia:93, at: atTime(3, 9, 5) }
+      ],
+      days: {}
+    };
+    s.taken[t + '|m1|morning'] = true;
+    s.taken[t + '|m4|morning'] = true;
+    s.days[t] = { steps: 3240, goal: 6000, ex: { squat: 20, rope: 0, walk: 10 } };
+    return s;
+  }
+
+  function normalize(s){
+    if (!s || typeof s !== 'object') return seedState();
+    s.meds = Array.isArray(s.meds) ? s.meds : [];
+    s.vitals = Array.isArray(s.vitals) ? s.vitals : [];
+    s.conditions = Array.isArray(s.conditions) ? s.conditions : [];
+    s.taken = (s.taken && typeof s.taken === 'object') ? s.taken : {};
+    s.days = (s.days && typeof s.days === 'object') ? s.days : {};
+    s.alarms = (s.alarms && typeof s.alarms === 'object') ? s.alarms : {};
+    s.meds.forEach(function(m){
+      m.slots = Array.isArray(m.slots) ? m.slots : [];
+      m.name = m.name || '이름 없는 약';
+      m.usage = m.usage || '식후 30분';
+    });
+    SLOTS.forEach(function(sl){
+      if (!/^\d{1,2}:\d{2}$/.test(String(s.alarms[sl.key] || ''))) s.alarms[sl.key] = sl.def;
+    });
+    return s;
+  }
+
+  var state = loadState();
+
+  function loadState(){
+    var raw = null;
+    try { raw = (typeof localStorage !== 'undefined') ? localStorage.getItem(KEY) : null; } catch (e) { raw = null; }
+    if (raw) {
+      try {
+        var parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') return normalize(parsed);
+      } catch (e2) {}
+    }
+    var fresh = seedState();
+    persist(fresh);
+    return fresh;
+  }
+
+  function persist(s){
+    try { if (typeof localStorage !== 'undefined') localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
+  }
+
+  function prune(){
+    var limit = dk(new Date(Date.now() - 45 * 86400000));
+    Object.keys(state.taken).forEach(function(k){ if (k.slice(0,10) < limit) delete state.taken[k]; });
+    Object.keys(state.days).forEach(function(k){ if (k < limit) delete state.days[k]; });
+  }
+
+  var savedTimer = null;
+  function save(){
+    prune();
+    persist(state);
+    flashSaved();
+  }
+  function flashSaved(){
+    var el = document.getElementById('saveDot');
+    if (!el) return;
+    el.textContent = '저장됨 ✓';
+    el.className = 'save on';
+    if (savedTimer) clearTimeout(savedTimer);
+    savedTimer = setTimeout(function(){
+      el.textContent = '자동 저장';
+      el.className = 'save';
+    }, 1600);
+  }
+
+  function todayData(){
+    var k = dk();
+    if (!state.days[k]) state.days[k] = { steps:0, goal:6000, ex:{ squat:0, rope:0, walk:0 } };
+    if (!state.days[k].ex) state.days[k].ex = { squat:0, rope:0, walk:0 };
+    if (!state.days[k].goal) state.days[k].goal = 6000;
+    return state.days[k];
+  }
+
+  function tkey(mid, slot){ return dk() + '|' + mid + '|' + slot; }
+
+  function findMed(name){
+    var n = normName(name);
+    for (var i=0;i<state.meds.length;i++){
+      if (normName(state.meds[i].name) === n) return state.meds[i];
+    }
+    return null;
+  }
+
+  function flushFormState(){
+    /* 폼 입력값은 form 객체로 관리하므로 재렌더링해도 유지된다 */
+  }
+
+  /* ================= 화면 상태 ================= */
+  var form = { name:'', memo:'', slots:[], usage:'식후 30분' };
+  var photoURL = null;
+  var ocrLoading = false;
+  var ocrDone = false;
+  var vitalType = 'bp';
+  var glucoseSub = '공복';
+  var alarmSlot = 'morning';
+  var toastTimer = null;
+
+  /* ================= 토스트 ================= */
+  function toast(msg){
+    var el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'toast on';
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.className = 'toast'; }, 2600);
+  }
+
+  /* ================= 오디오 (차임벨) ================= */
+  var audioCtx = null;
+  function playChime(){
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!audioCtx) audioCtx = new AC();
+      if (audioCtx.state === 'suspended' && audioCtx.resume) audioCtx.resume();
+      var t0 = audioCtx.currentTime + 0.03;
+      var notes = [[523.25,0],[659.25,0.26],[783.99,0.52],[1046.50,0.86]];
+      notes.forEach(function(pair){
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = pair[0];
+        var start = t0 + pair[1];
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.22, start + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 1.6);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(start);
+        osc.stop(start + 1.7);
+      });
+    } catch (e) {}
+  }
+
+  /* ================= 공용 조각 ================= */
+  function greeting(){
+    var h = new Date().getHours();
+    if (h < 5)  return '편안한 밤이에요';
+    if (h < 11) return '좋은 아침이에요';
+    if (h < 17) return '좋은 오후예요';
+    if (h < 22) return '좋은 저녁이에요';
+    return '편안한 밤이에요';
+  }
+
+  function ring(pct){
+    var r = 42;
+    var c = 2 * Math.PI * r;
+    var dash = Math.max(0, Math.min(100, pct)) / 100 * c;
+    var shown = Math.round(pct);
+    return '' +
+      '<div class="ring-wrap">' +
+        '<svg class="ring-svg" viewBox="0 0 100 100" aria-hidden="true">' +
+          '<defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">' +
+            '<stop offset="0%" stop-color="#34D399"/>' +
+            '<stop offset="100%" stop-color="#0F766E"/>' +
+          '</linearGradient></defs>' +
+          '<circle cx="50" cy="50" r="42" fill="none" stroke="#EDF2F0" stroke-width="9"/>' +
+          '<circle cx="50" cy="50" r="42" fill="none" stroke="url(#ringGrad)" stroke-width="9" ' +
+            'stroke-linecap="round" stroke-dasharray="' + dash.toFixed(2) + ' ' + c.toFixed(2) + '" ' +
+            'transform="rotate(-90 50 50)"/>' +
+        '</svg>' +
+        '<div class="ring-center">' +
+          '<span class="ring-pct">' + shown + '<small>%</small></span>' +
+          '<span class="ring-cap">복약 달성</span>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function nextAlarm(){
+    var now = new Date();
+    var cur = now.getHours() * 60 + now.getMinutes();
+    var list = SLOTS.map(function(s){
+      return { key:s.key, name:s.name, time:state.alarms[s.key], min:toMin(state.alarms[s.key]) };
+    }).sort(function(a,b){ return a.min - b.min; });
+    for (var i=0;i<list.length;i++){
+      if (list[i].min > cur) { list[i].tomorrow = false; return list[i]; }
+    }
+    list[0].tomorrow = true;
+    return list[0];
+  }
+
+  /* ================= 탭 1 : 오늘 약 ================= */
+  function renderToday(){
+    var el = document.getElementById('panel-today');
+    if (!el) return;
+
+    var d = new Date();
+    var wd = ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'][d.getDay()];
+    var total = 0, done = 0;
+    state.meds.forEach(function(m){
+      (m.slots || []).forEach(function(sl){
+        total++;
+        if (state.taken[tkey(m.id, sl)]) done++;
+      });
+    });
+    var pct = total ? (done / total * 100) : 0;
+    var next = nextAlarm();
+
+    var html = '';
+    html += '<section class="hero">';
+    html +=   '<p class="hero-greet">' + greeting() + ', 안프로님</p>';
+    html +=   '<p class="hero-sub">' + (d.getMonth()+1) + '월 ' + d.getDate() + '일 ' + wd + '</p>';
+    html +=   '<div class="hero-body">';
+    html +=     ring(pct);
+    html +=     '<div class="hero-info">';
+    if (total > 0) {
+      html +=       '<p class="hero-count">총 <b>' + total + '회</b> 중<br><b>' + done + '회</b> 완료</p>';
+      var remain = total - done;
+      html +=       '<p class="hero-note">' + (remain > 0 ? remain + '회 더 챙기면 오늘 완료예요' : '오늘 약을 모두 챙겼어요 🎉') + '</p>';
+    } else {
+      html +=       '<p class="hero-count">등록된 약이 없어요</p>';
+      html +=       '<p class="hero-note">약 등록에서 약을 담아 주세요</p>';
+    }
+    html +=     '</div>';
+    html +=   '</div>';
+    if (total > 0) {
+      html +=   '<div class="bar"><span style="width:' + Math.min(100, pct) + '%"></span></div>';
+    }
+    html +=   '<div class="hero-foot">';
+    if (total > 0) {
+      html +=   '<span class="hero-next">🔔<span>다음 알람 · ' + next.name + ' ' + state.alarms[next.key] + (next.tomorrow ? ' (내일)' : '') + '</span></span>';
+    } else {
+      html +=   '<span class="hero-next">📷<span>약 등록 탭에서 약을 담아 주세요</span></span>';
+    }
+    html +=   '</div>';
+    html += '</section>';
+
+    html += '<p class="section-label">시간대별 복약</p>';
+
+    SLOTS.forEach(function(sl){
+      var meds = state.meds.filter(function(m){ return (m.slots || []).indexOf(sl.key) >= 0; });
+      var slotDone = meds.filter(function(m){ return state.taken[tkey(m.id, sl.key)]; }).length;
+      var allDone = meds.length > 0 && slotDone === meds.length;
+
+      html += '<section class="card slot-card">';
+      html +=   '<div class="slot-head">';
+      html +=     '<span class="tile ' + sl.tint + '" aria-hidden="true">' + sl.emoji + '</span>';
+      html +=     '<div class="slot-title">';
+      html +=       '<span class="slot-name">' + sl.name + '</span>';
+      if (meds.length) {
+        html +=     '<span class="slot-state' + (allDone ? ' done' : '') + '">' + (allDone ? '모두 챙겼어요 ✓' : '약 ' + meds.length + '개 · ' + slotDone + '개 완료') + '</span>';
+      } else {
+        html +=     '<span class="slot-state">먹는 약 없음</span>';
+      }
+      html +=     '</div>';
+      html +=     '<div class="slot-alarm">';
+      html +=       '<label for="time-' + sl.key + '">알람</label>';
+      html +=       '<input class="time-input" id="time-' + sl.key + '" type="time" value="' + esc(state.alarms[sl.key]) + '" data-slot="' + sl.key + '" aria-label="' + sl.name + ' 알람 시간">';
+      html +=     '</div>';
+      html +=   '</div>';
+
+      if (meds.length) {
+        meds.forEach(function(m){
+          var on = !!state.taken[tkey(m.id, sl.key)];
+          html += '<div class="dose">';
+          html +=   '<div class="dose-info">';
+          html +=     '<p class="dose-name">' + esc(m.name) + '</p>';
+          html +=     '<p class="dose-usage">' + esc(m.usage) + (m.memo ? ' · ' + esc(m.memo) : '') + '</p>';
+          html +=   '</div>';
+          html +=   '<button class="take-btn' + (on ? ' on' : '') + '" data-act="toggle-take" data-med="' + m.id + '" data-slot="' + sl.key + '" aria-pressed="' + (on ? 'true' : 'false') + '" aria-label="' + esc(m.name) + ' ' + sl.name + ' 복용 ' + (on ? '완료 취소' : '체크') + '">';
+          html +=     (on ? '완료 ✓' : '먹었어요');
+          html +=   '</button>';
+          html += '</div>';
+        });
+      } else {
+        html += '<div class="empty-slot">';
+        html +=   '<p>이 시간에 먹는 약이 없어요</p>';
+        html +=   '<button class="btn btn-line" data-act="go-add-slot" data-slot="' + sl.key + '">+ 이 시간에 약 추가</button>';
+        html += '</div>';
+      }
+
+      html += '<button class="bell-btn" data-act="test-alarm" data-slot="' + sl.key + '">🔔 알람 소리 테스트</button>';
+      html += '</section>';
+    });
+
+    html += '<section class="card">';
+    html +=   '<h2 class="card-title">데이터 관리</h2>';
+    html +=   '<p class="card-desc">약·복약 체크·수치·운동 기록은 이 기기 브라우저에만 저장됩니다.</p>';
+    html +=   '<button class="btn btn-soft" data-act="reset">예시 초기화</button>';
+    html +=   '<p class="app-foot">약속 시안 v1.0 · 안프로님 아이디어<br>아이폰 사파리에서 <b>공유 → 홈 화면에 추가</b> 하면 앱처럼 열려요.</p>';
+    html += '</section>';
+
+    el.innerHTML = html;
+  }
+
+  /* ================= 탭 2 : 약 등록 ================= */
+  function renderAdd(){
+    var el = document.getElementById('panel-add');
+    if (!el) return;
+    var html = '';
+
+    html += '<section class="card">';
+    html +=   '<h2 class="card-title">약봉투·처방전으로 등록</h2>';
+    html +=   '<p class="card-desc">봉투나 처방전을 사진으로 찍으면 약 이름과 복용 시간을 읽어 드려요.</p>';
+    html +=   '<label class="dropzone" for="photoInput">';
+    html +=     '<span class="dz-ico" aria-hidden="true">📷</span>';
+    html +=     '<span class="dz-main">사진 찍기 / 올리기</span>';
+    html +=     '<span class="dz-sub">약봉투 · 처방전 · 약 상자 모두 좋아요</span>';
+    html +=   '</label>';
+
+    if (photoURL) {
+      html += '<div class="preview"><img src="' + photoURL + '" alt="올린 약봉투 사진 미리보기"></div>';
+      html += '<div class="row-2">';
+      html +=   '<label class="btn btn-soft" for="photoInput">다시 찍기</label>';
+      html +=   '<button class="btn btn-soft" data-act="remove-photo">지우기</button>';
+      html += '</div>';
+
+      if (ocrLoading) {
+        html += '<div class="ocr-loading"><span class="spinner" aria-hidden="true"></span>약봉투 글자를 읽는 중…</div>';
+      } else {
+        html += '<div class="row-2" style="grid-template-columns:1fr">';
+        html +=   '<button class="btn btn-primary btn-lg btn-ocr" data-act="ocr">✨ 약봉투 글자 자동 채우기 (체험)</button>';
+        html += '</div>';
+      }
+    } else {
+      html += '<p class="hint">사진을 올리면 글자 자동 채우기를 해 볼 수 있어요.</p>';
+    }
+
+    html += '<p class="notice">※ 지금은 <b>시안 체험용</b>입니다. 사진 속 글자를 실제로 읽는 기능(OCR)은 정식 앱에서 제공될 예정이에요.</p>';
+
+    if (ocrDone && !ocrLoading) {
+      html += '<div class="ocr-panel">';
+      html +=   '<p class="ocr-title">📄 읽어낸 약 ' + OCR_RESULT.length + '개</p>';
+      html +=   '<ul class="ocr-list">';
+      OCR_RESULT.forEach(function(item){
+        var dup = !!findMed(item.name);
+        html += '<li class="ocr-item">';
+        html +=   '<div class="oi-main">';
+        html +=     '<p class="oi-name">' + esc(item.name) + '</p>';
+        html +=     '<p class="oi-sub">' + slotLabel(item.slots) + ' · ' + esc(item.usage) + '</p>';
+        html +=   '</div>';
+        html +=   '<span class="tag ' + (dup ? 'dup' : 'new') + '">' + (dup ? '이미 등록' : '새 약') + '</span>';
+        html += '</li>';
+      });
+      html +=   '</ul>';
+      html +=   '<button class="btn btn-primary" data-act="apply-ocr">읽어낸 약 모두 추가하기</button>';
+      html +=   '<p class="hint" style="margin-top:10px">첫 번째 약은 아래 ‘직접 입력’ 칸에도 채워 두었어요.</p>';
+      html += '</div>';
+    }
+
+    html += '</section>';
+
+    /* 직접 입력 */
+    html += '<section class="card">';
+    html +=   '<h2 class="card-title">직접 입력해서 등록</h2>';
+    html +=   '<p class="card-desc">약 이름과 복용 시간을 적어 주세요.</p>';
+
+    html +=   '<div class="field">';
+    html +=     '<label class="label" for="fName">약 이름</label>';
+    html +=     '<input class="input" id="fName" type="text" inputmode="text" autocomplete="off" placeholder="예) 아모잘탄정 5/50mg" value="' + esc(form.name) + '">';
+    html +=   '</div>';
+
+    html +=   '<div class="field">';
+    html +=     '<span class="label">복용 시간대<em>여러 개 고를 수 있어요</em></span>';
+    html +=     '<div class="chips">';
+    SLOTS.forEach(function(sl){
+      var on = form.slots.indexOf(sl.key) >= 0;
+      html += '<button class="chip' + (on ? ' on' : '') + '" data-act="slot-toggle" data-slot="' + sl.key + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + sl.emoji + ' ' + sl.name + '</button>';
+    });
+    html +=     '</div>';
+    html +=   '</div>';
+
+    html +=   '<div class="field">';
+    html +=     '<span class="label">복용 안내</span>';
+    html +=     '<div class="chips">';
+    USAGES.forEach(function(u){
+      var on = form.usage === u;
+      html += '<button class="chip sm' + (on ? ' on' : '') + '" data-act="usage" data-usage="' + esc(u) + '">' + esc(u) + '</button>';
+    });
+    html +=     '</div>';
+    html +=   '</div>';
+
+    html +=   '<div class="field">';
+    html +=     '<label class="label" for="fMemo">메모<em>선택</em></label>';
+    html +=     '<input class="input" id="fMemo" type="text" autocomplete="off" placeholder="예) 혈압약 / 물 한 컵과 함께" value="' + esc(form.memo) + '">';
+    html +=   '</div>';
+
+    html +=   '<button class="btn btn-primary btn-lg" data-act="add-med">약 추가하기</button>';
+    html += '</section>';
+
+    /* 등록된 약 */
+    html += '<section class="card">';
+    html +=   '<h2 class="card-title">등록된 약 <span class="num">' + state.meds.length + '개</span></h2>';
+    if (state.meds.length) {
+      html += '<ul class="med-list">';
+      state.meds.forEach(function(m){
+        html += '<li class="med-row">';
+        html +=   '<div class="med-main">';
+        html +=     '<p class="med-name">' + esc(m.name) + '</p>';
+        html +=     '<p class="med-meta">' + slotLabel(m.slots) + ' · ' + esc(m.usage) + '</p>';
+        html +=   '</div>';
+        html +=   '<button class="icon-btn" data-act="del-med" data-id="' + m.id + '" aria-label="' + esc(m.name) + ' 삭제">✕</button>';
+        html += '</li>';
+      });
+      html += '</ul>';
+    } else {
+      html += '<p class="empty">아직 등록된 약이 없어요.</p>';
+    }
+    html += '</section>';
+
+    el.innerHTML = html;
+  }
+
+  /* ================= 탭 3 : 건강수치 ================= */
+  function bpLevel(sys, dia){
+    if (sys >= 140 || dia >= 90) return { label:'주의', cls:'bad' };
+    if (sys >= 120 || dia >= 80) return { label:'조금 높음', cls:'warn' };
+    return { label:'정상', cls:'ok' };
+  }
+  function glucoseLevel(v, sub){
+    if (sub === '공복') {
+      if (v >= 126) return { label:'주의', cls:'bad' };
+      if (v < 70)   return { label:'낮음', cls:'warn' };
+      if (v >= 100) return { label:'조금 높음', cls:'warn' };
+      return { label:'정상', cls:'ok' };
+    }
+    if (v >= 200) return { label:'주의', cls:'bad' };
+    if (v >= 140) return { label:'조금 높음', cls:'warn' };
+    return { label:'정상', cls:'ok' };
+  }
+
+  function renderHealth(){
+    var el = document.getElementById('panel-health');
+    if (!el) return;
+    var html = '';
+
+    html += '<section class="card">';
+    html +=   '<h2 class="card-title">❤️ 내 기저질환</h2>';
+    html +=   '<p class="card-desc">해당하는 질환을 눌러 주세요. 여러 개 고를 수 있어요.</p>';
+    html +=   '<div class="chips">';
+    CONDITIONS.forEach(function(c){
+      var on = state.conditions.indexOf(c) >= 0;
+      html += '<button class="chip' + (on ? ' on' : '') + '" data-act="cond" data-name="' + esc(c) + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + (on ? '✓ ' : '') + esc(c) + '</button>';
+    });
+    html +=   '</div>';
+    html += '</section>';
+
+    html += '<section class="card">';
+    html +=   '<h2 class="card-title">수치 기록하기</h2>';
+    html +=   '<p class="card-desc">오늘 잰 수치를 적어 두면 변화를 한눈에 볼 수 있어요.</p>';
+    html +=   '<div class="seg" role="tablist" aria-label="수치 종류">';
+    html +=     '<button role="tab" aria-selected="' + (vitalType === 'bp' ? 'true' : 'false') + '" class="' + (vitalType === 'bp' ? 'on' : '') + '" data-act="vital-type" data-type="bp">혈압</button>';
+    html +=     '<button role="tab" aria-selected="' + (vitalType === 'glucose' ? 'true' : 'false') + '" class="' + (vitalType === 'glucose' ? 'on' : '') + '" data-act="vital-type" data-type="glucose">혈당</button>';
+    html +=   '</div>';
+
+    if (vitalType === 'bp') {
+      html +=   '<div class="bp-grid">';
+      html +=     '<div class="field"><label class="label" for="bpSys">수축기<em>위</em></label><input class="input" id="bpSys" type="number" inputmode="numeric" min="60" max="260" placeholder="120"></div>';
+      html +=     '<div class="field"><label class="label" for="bpDia">이완기<em>아래</em></label><input class="input" id="bpDia" type="number" inputmode="numeric" min="30" max="160" placeholder="80"></div>';
+      html +=   '</div>';
+      html +=   '<p class="unit-note">단위 : mmHg</p>';
+    } else {
+      html +=   '<div class="seg" style="margin-bottom:14px">';
+      html +=     '<button class="' + (glucoseSub === '공복' ? 'on' : '') + '" data-act="glucose-sub" data-sub="공복">공복</button>';
+      html +=     '<button class="' + (glucoseSub === '식후' ? 'on' : '') + '" data-act="glucose-sub" data-sub="식후">식후</button>';
+      html +=   '</div>';
+      html +=   '<div class="field"><label class="label" for="gluVal">혈당 수치</label><input class="input" id="gluVal" type="number" inputmode="numeric" min="40" max="500" placeholder="100"></div>';
+      html +=   '<p class="unit-note">단위 : mg/dL</p>';
+    }
+
+    html +=   '<div class="row-2" style="grid-template-columns:1fr;margin-top:16px">';
+    html +=     '<button class="btn btn-primary btn-lg" data-act="save-vital">기록 저장</button>';
+    html +=   '</div>';
+    html += '</section>';
+
+    html += '<section class="card">';
+    html +=   '<h2 class="card-title">최근 기록 <span class="num">' + state.vitals.length + '건</span></h2>';
+    if (state.vitals.length) {
+      var list = state.vitals.slice().sort(function(a,b){ return new Date(b.at) - new Date(a.at); }).slice(0, 12);
+      html += '<ul class="rec-list">';
+      list.forEach(function(v){
+        var lv, val, unit, kindLabel;
+        if (v.kind === 'bp') {
+          lv = bpLevel(v.sys, v.dia);
+          val = v.sys + ' / ' + v.dia;
+          unit = 'mmHg';
+          kindLabel = '혈압';
+        } else {
+          lv = glucoseLevel(v.value, v.sub);
+          val = v.value;
+          unit = 'mg/dL';
+          kindLabel = '혈당 · ' + (v.sub || '공복');
+        }
+        html += '<li class="rec">';
+        html +=   '<div class="rec-main">';
+        html +=     '<p class="rec-val">' + val + '<small>' + unit + '</small></p>';
+        html +=     '<p class="rec-when">' + fmtWhen(v.at) + ' · ' + kindLabel + '</p>';
+        html +=   '</div>';
+        html +=   '<span class="badge ' + lv.cls + '">' + lv.label + '</span>';
+        html +=   '<button class="rec-del" data-act="del-vital" data-id="' + v.id + '" aria-label="이 기록 삭제">✕</button>';
+        html += '</li>';
+      });
+      html += '</ul>';
+      html += '<p class="notice">수축기 140 이상이거나 이완기 90 이상이면 <b>주의</b>로 표시됩니다. 측정은 같은 시간에 하는 것이 좋아요.</p>';
+    } else {
+      html += '<p class="empty">아직 기록이 없어요.</p>';
+    }
+    html += '</section>';
+
+    el.innerHTML = html;
+  }
+
+  /* ================= 탭 4 : 운동 ================= */
+  function renderExercise(){
+    var el = document.getElementById('panel-exercise');
+    if (!el) return;
+    var d = todayData();
+    var pct = d.goal ? Math.round(d.steps / d.goal * 100) : 0;
+    var html = '';
+
+    html += '<section class="card">';
+    html +=   '<h2 class="card-title">🚶 오늘 걸음수</h2>';
+    html +=   '<div class="steps-big"><b>' + fmtNum(d.steps) + '</b><small>보</small></div>';
+    html +=   '<div class="bar"><span style="width:' + Math.min(100, pct) + '%"></span></div>';
+    html +=   '<div class="row-between"><span>목표 ' + fmtNum(d.goal) + '보</span><span><b>' + pct + '%</b></span></div>';
+    html +=   '<div class="row-2">';
+    html +=     '<button class="btn btn-line" data-act="steps-add" data-n="500">+500보</button>';
+    html +=     '<button class="btn btn-line" data-act="steps-add" data-n="1000">+1,000보</button>';
+    html +=   '</div>';
+    html +=   '<p class="goal-label">하루 목표 바꾸기</p>';
+    html +=   '<div class="goal-grid">';
+    STEP_GOALS.forEach(function(g){
+      var on = d.goal === g;
+      html += '<button class="chip' + (on ? ' on' : '') + '" data-act="goal" data-n="' + g + '">' + fmtNum(g) + '</button>';
+    });
+    html +=   '</div>';
+    html +=   '<button class="mini-link" data-act="steps-add" data-n="-500">−500보 (잘못 눌렀을 때)</button>';
+    html += '</section>';
+
+    html += '<p class="section-label">오늘의 운동 3가지</p>';
+    html += '<section class="card">';
+    EXERCISES.forEach(function(ex){
+      var v = d.ex[ex.key] || 0;
+      var p = Math.min(100, Math.round(v / ex.goal * 100));
+      var done = v >= ex.goal;
+      html += '<div class="ex-item">';
+      html +=   '<div class="ex-head">';
+      html +=     '<span class="tile ' + (done ? 'mint' : 'slate') + '" aria-hidden="true">' + ex.emoji + '</span>';
+      html +=     '<div class="ex-info">';
+      html +=       '<p class="ex-name">' + ex.name + '</p>';
+      html +=       '<p class="ex-sub">' + fmtNum(v) + ' / ' + fmtNum(ex.goal) + ex.unit + '</p>';
+      html +=     '</div>';
+      html +=     done ? '<span class="badge ok">달성!</span>' : '<span class="ex-pct">' + p + '%</span>';
+      html +=   '</div>';
+      html +=   '<div class="bar sm"><span style="width:' + p + '%"></span></div>';
+      html +=   '<div class="row-2">';
+      html +=     '<button class="btn btn-soft" data-act="ex-add" data-key="' + ex.key + '" data-n="' + ex.step + '">+' + ex.step + ex.unit + '</button>';
+      html +=     '<button class="btn ' + (done ? 'btn-primary' : 'btn-soft') + '" data-act="ex-done" data-key="' + ex.key + '">' + (done ? '완료 ✓' : '오늘 완료') + '</button>';
+      html +=   '</div>';
+      html += '</div>';
+    });
+    html += '</section>';
+
+    var exDoneCount = EXERCISES.filter(function(ex){ return (d.ex[ex.key] || 0) >= ex.goal; }).length;
+    html += '<section class="card">';
+    html +=   '<h2 class="card-title">오늘의 요약</h2>';
+    html +=   '<p class="card-desc" style="margin-bottom:0">걸음 ' + fmtNum(d.steps) + '보 · 운동 ' + exDoneCount + ' / 3가지 달성<br>조금씩 매일이 제일 좋아요. 오늘도 수고하셨어요!</p>';
+    html += '</section>';
+
+    el.innerHTML = html;
+  }
+
+  /* ================= 전체 렌더 ================= */
+  function renderAll(){
+    renderToday();
+    renderAdd();
+    renderHealth();
+    renderExercise();
+  }
+
+  function switchTab(name){
+    ['today','add','health','exercise'].forEach(function(k){
+      var p = document.getElementById('panel-' + k);
+      if (p) p.hidden = (k !== name);
+    });
+    var btns = document.querySelectorAll('.tabbar button');
+    for (var i=0;i<btns.length;i++){
+      var on = btns[i].getAttribute('data-tab') === name;
+      btns[i].className = on ? 'on' : '';
+      btns[i].setAttribute('aria-selected', on ? 'true' : 'false');
+    }
+    try { window.scrollTo(0, 0); } catch (e) {}
+  }
+
+  /* ================= 오버레이 ================= */
+  function openOverlay(id){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.hidden = false;
+    try { document.body.style.overflow = 'hidden'; } catch (e) {}
+  }
+  function closeOverlays(){
+    ['alarmOverlay','resetOverlay'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
+    try { document.body.style.overflow = ''; } catch (e) {}
+  }
+
+  function openAlarm(slotKey){
+    alarmSlot = slotKey;
+    var s = slotOf(slotKey);
+    var meds = state.meds.filter(function(m){ return (m.slots || []).indexOf(slotKey) >= 0; });
+    var titleEl = document.getElementById('alarmTitle');
+    var listEl = document.getElementById('alarmMeds');
+    if (titleEl) titleEl.textContent = s.name + ' 약 · ' + state.alarms[slotKey];
+    if (listEl) {
+      if (meds.length) {
+        listEl.innerHTML = meds.map(function(m){
+          return '<li><span class="am-name">' + esc(m.name) + '</span><span class="am-use">' + esc(m.usage) + '</span></li>';
+        }).join('');
+      } else {
+        listEl.innerHTML = '<li><span class="am-use">이 시간에 먹는 약은 없어요. 알람 소리만 확인해 보세요.</span></li>';
+      }
+    }
+    openOverlay('alarmOverlay');
+    playChime();
+  }
+
+  /* ================= 동작 ================= */
+  function toggleTake(mid, slot){
+    var k = tkey(mid, slot);
+    var wasOn = !!state.taken[k];
+    if (wasOn) delete state.taken[k];
+    else state.taken[k] = true;
+    save();
+    renderToday();
+    if (!wasOn) toast('잘 챙기셨어요! 👍');
+  }
+
+  function addSteps(n){
+    var d = todayData();
+    var before = d.steps;
+    d.steps = Math.max(0, d.steps + n);
+    save();
+    renderExercise();
+    if (before < d.goal && d.steps >= d.goal) toast('오늘 목표 걸음수 달성! 🎉');
+    else if (n < 0) toast('걸음수를 ' + fmtNum(Math.abs(n)) + '보 줄였어요.');
+  }
+
+  function setGoal(g){
+    var d = todayData();
+    d.goal = g;
+    save();
+    renderExercise();
+    toast('목표를 ' + fmtNum(g) + '보로 바꿨어요.');
+  }
+
+  function addEx(key, n){
+    var d = todayData();
+    var ex = null;
+    EXERCISES.forEach(function(e){ if (e.key === key) ex = e; });
+    if (!ex) return;
+    var before = d.ex[key] || 0;
+    d.ex[key] = Math.max(0, before + n);
+    save();
+    renderExercise();
+    if (before < ex.goal && d.ex[key] >= ex.goal) toast(ex.name + ' 목표 달성! 🎉');
+  }
+
+  function doneEx(key){
+    var d = todayData();
+    var ex = null;
+    EXERCISES.forEach(function(e){ if (e.key === key) ex = e; });
+    if (!ex) return;
+    d.ex[key] = ex.goal;
+    save();
+    renderExercise();
+    toast(ex.name + ' 오늘 완료로 표시했어요.');
+  }
+
+  function toggleCondition(name){
+    var i = state.conditions.indexOf(name);
+    if (i >= 0) state.conditions.splice(i, 1);
+    else state.conditions.push(name);
+    save();
+    renderHealth();
+  }
+
+  function saveVital(){
+    var now = new Date().toISOString();
+    if (vitalType === 'bp') {
+      var sysEl = document.getElementById('bpSys');
+      var diaEl = document.getElementById('bpDia');
+      var sys = parseInt(sysEl ? sysEl.value : '', 10);
+      var dia = parseInt(diaEl ? diaEl.value : '', 10);
+      if (!sys || !dia) { toast('수축기와 이완기를 모두 적어 주세요.'); return; }
+      if (sys < 60 || sys > 260 || dia < 30 || dia > 160) { toast('수치를 다시 확인해 주세요.'); return; }
+      if (sys <= dia) { toast('수축기는 이완기보다 커야 해요.'); return; }
+      state.vitals.push({ id: uid('v'), kind:'bp', sys:sys, dia:dia, at: now });
+      save();
+      renderHealth();
+      toast('혈압 ' + sys + '/' + dia + ' 기록을 저장했어요.');
+    } else {
+      var valEl = document.getElementById('gluVal');
+      var val = parseInt(valEl ? valEl.value : '', 10);
+      if (!val) { toast('혈당 수치를 적어 주세요.'); return; }
+      if (val < 40 || val > 500) { toast('수치를 다시 확인해 주세요.'); return; }
+      state.vitals.push({ id: uid('v'), kind:'glucose', value:val, sub:glucoseSub, at: now });
+      save();
+      renderHealth();
+      toast('혈당 ' + val + ' 기록을 저장했어요.');
+    }
+  }
+
+  function delVital(id){
+    state.vitals = state.vitals.filter(function(v){ return v.id !== id; });
+    save();
+    renderHealth();
+    toast('기록을 지웠어요.');
+  }
+
+  function toggleFormSlot(key){
+    var i = form.slots.indexOf(key);
+    if (i >= 0) form.slots.splice(i, 1);
+    else form.slots.push(key);
+    renderAdd();
+  }
+
+  function setUsage(u){
+    form.usage = u;
+    renderAdd();
+  }
+
+  function addMed(){
+    var name = String(form.name || '').trim();
+    if (!name) { toast('약 이름을 적어 주세요.'); return; }
+    if (!form.slots.length) { toast('복용 시간대를 하나 이상 골라 주세요.'); return; }
+    if (findMed(name)) { toast('이미 등록된 약이에요.'); return; }
+    state.meds.push({
+      id: uid('m'),
+      name: name,
+      usage: form.usage || '식후 30분',
+      memo: String(form.memo || '').trim(),
+      slots: sortedSlots(form.slots)
+    });
+    save();
+    form.name = ''; form.memo = ''; form.slots = [];
+    renderAll();
+    toast('약을 등록했어요. 오늘 약에 나타납니다.');
+  }
+
+  function delMed(id){
+    state.meds = state.meds.filter(function(m){ return m.id !== id; });
+    save();
+    renderAll();
+    toast('약을 목록에서 지웠어요.');
+  }
+
+  function applyOcr(){
+    var added = 0, merged = 0;
+    OCR_RESULT.forEach(function(item){
+      var ex = findMed(item.name);
+      if (!ex) {
+        state.meds.push({
+          id: uid('m'),
+          name: item.name,
+          usage: item.usage,
+          memo: item.memo || '',
+          slots: sortedSlots(item.slots)
+        });
+        added++;
+      } else {
+        var grew = false;
+        item.slots.forEach(function(sl){
+          if (ex.slots.indexOf(sl) < 0) { ex.slots.push(sl); grew = true; }
+        });
+        if (grew) merged++;
+      }
+    });
+    save();
+    renderAll();
+    var msg;
+    if (added && merged) msg = '새 약 ' + added + '개를 추가하고, ' + merged + '개는 시간대를 더했어요.';
+    else if (added) msg = '약 ' + added + '개를 등록했어요. 오늘 약에서 확인해 보세요.';
+    else if (merged) msg = '이미 있던 약 ' + merged + '개에 시간대를 더했어요.';
+    else msg = '읽어낸 약이 이미 모두 등록되어 있어요.';
+    toast(msg);
+    if (added || merged) switchTab('today');
+  }
+
+  function runOcr(){
+    if (!photoURL) { toast('먼저 약봉투 사진을 올려 주세요.'); return; }
+    ocrLoading = true;
+    ocrDone = false;
+    renderAdd();
+    setTimeout(function(){
+      ocrLoading = false;
+      ocrDone = true;
+      form.name = OCR_RESULT[0].name;
+      form.usage = OCR_RESULT[0].usage;
+      form.memo = OCR_RESULT[0].memo || '';
+      form.slots = OCR_RESULT[0].slots.slice();
+      renderAdd();
+      toast('약봉투 글자를 읽었어요. 확인해 주세요.');
+    }, 1400);
+  }
+
+  function onPhotoChange(e){
+    var input = e && e.target ? e.target : document.getElementById('photoInput');
+    var file = input && input.files && input.files[0];
+    if (!file) return;
+    try {
+      if (photoURL && window.URL && window.URL.revokeObjectURL) window.URL.revokeObjectURL(photoURL);
+      photoURL = window.URL.createObjectURL(file);
+    } catch (err) {
+      photoURL = null;
+    }
+    ocrDone = false;
+    ocrLoading = false;
+    renderAdd();
+    toast('사진을 올렸어요. 이제 글자 자동 채우기를 눌러 보세요.');
+  }
+
+  function removePhoto(){
+    try {
+      if (photoURL && window.URL && window.URL.revokeObjectURL) window.URL.revokeObjectURL(photoURL);
+    } catch (e) {}
+    photoURL = null;
+    ocrDone = false;
+    ocrLoading = false;
+    var input = document.getElementById('photoInput');
+    if (input) input.value = '';
+    renderAdd();
+  }
+
+  function goAddSlot(key){
+    form.slots = [key];
+    switchTab('add');
+    renderAdd();
+    var f = document.getElementById('fName');
+    if (f && f.focus) f.focus();
+  }
+
+  function openReset(){ openOverlay('resetOverlay'); }
+
+  function doReset(){
+    state = seedState();
+    persist(state);
+    photoURL = null;
+    ocrDone = false;
+    ocrLoading = false;
+    form.name = ''; form.memo = ''; form.slots = []; form.usage = '식후 30분';
+    var input = document.getElementById('photoInput');
+    if (input) input.value = '';
+    closeOverlays();
+    renderAll();
+    switchTab('today');
+    flashSaved();
+    toast('예시 데이터로 되돌렸어요.');
+  }
+
+  function alarmTakeAll(){
+    var meds = state.meds.filter(function(m){ return (m.slots || []).indexOf(alarmSlot) >= 0; });
+    meds.forEach(function(m){ state.taken[tkey(m.id, alarmSlot)] = true; });
+    save();
+    closeOverlays();
+    renderToday();
+    if (meds.length) toast(meds.length + '개 약을 완료로 표시했어요.');
+    else toast('확인했어요.');
+  }
+
+  /* ================= 이벤트 ================= */
+  document.addEventListener('click', function(e){
+    if (e.target && e.target.className === 'overlay') { closeOverlays(); return; }
+    var t = e.target && e.target.closest ? e.target.closest('[data-act]') : null;
+    if (!t) return;
+    var act = t.getAttribute('data-act');
+    var ds = t.dataset || {};
+    switch (act) {
+      case 'tab': switchTab(t.getAttribute('data-tab')); break;
+      case 'toggle-take': toggleTake(t.getAttribute('data-med'), t.getAttribute('data-slot')); break;
+      case 'test-alarm': openAlarm(t.getAttribute('data-slot')); break;
+      case 'alarm-take': alarmTakeAll(); break;
+      case 'alarm-later': closeOverlays(); toast('10분 뒤에 다시 알려 드릴게요. (시안)'); break;
+      case 'steps-add': addSteps(parseInt(t.getAttribute('data-n'), 10) || 0); break;
+      case 'goal': setGoal(parseInt(t.getAttribute('data-n'), 10) || 6000); break;
+      case 'ex-add': addEx(t.getAttribute('data-key'), parseInt(t.getAttribute('data-n'), 10) || 0); break;
+      case 'ex-done': doneEx(t.getAttribute('data-key')); break;
+      case 'cond': toggleCondition(t.getAttribute('data-name')); break;
+      case 'vital-type': vitalType = t.getAttribute('data-type'); renderHealth(); break;
+      case 'glucose-sub': glucoseSub = t.getAttribute('data-sub'); renderHealth(); break;
+      case 'save-vital': saveVital(); break;
+      case 'del-vital': delVital(t.getAttribute('data-id')); break;
+      case 'slot-toggle': toggleFormSlot(t.getAttribute('data-slot')); break;
+      case 'usage': setUsage(t.getAttribute('data-usage')); break;
+      case 'add-med': addMed(); break;
+      case 'del-med': delMed(t.getAttribute('data-id')); break;
+      case 'ocr': runOcr(); break;
+      case 'apply-ocr': applyOcr(); break;
+      case 'remove-photo': removePhoto(); break;
+      case 'reset': openReset(); break;
+      case 'reset-yes': doReset(); break;
+      case 'cancel': closeOverlays(); break;
+      case 'go-add-slot': goAddSlot(t.getAttribute('data-slot')); break;
+      default: break;
+    }
+  });
+
+  document.addEventListener('input', function(e){
+    var el = e.target;
+    if (!el || !el.id) return;
+    if (el.id === 'fName') form.name = el.value;
+    else if (el.id === 'fMemo') form.memo = el.value;
+  });
+
+  document.addEventListener('change', function(e){
+    var el = e.target;
+    if (!el) return;
+    if (el.id === 'photoInput') { onPhotoChange(e); return; }
+    if (el.className && String(el.className).indexOf('time-input') >= 0) {
+      var slot = el.getAttribute('data-slot');
+      if (!slot) return;
+      var v = el.value || SLOTS[0].def;
+      state.alarms[slot] = v;
+      save();
+      renderToday();
+      toast(slotName(slot) + ' 알람을 ' + v + '(으)로 바꿨어요.');
+    }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeOverlays();
+  });
+
+  var photoEl = document.getElementById('photoInput');
+  if (photoEl) photoEl.addEventListener('change', onPhotoChange);
+
+  /* ================= 시작 ================= */
+  try { renderAll(); } catch (err) { if (window.console) console.error(err); }
+  switchTab('today');
+
+  if (window.console && console.log) console.log('약속 시안 준비 완료');
+})();
+</script>
+</body>
+</html>
